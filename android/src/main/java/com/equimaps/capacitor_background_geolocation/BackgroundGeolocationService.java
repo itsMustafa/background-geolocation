@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import java.util.HashSet;
 
@@ -83,11 +84,13 @@ public class BackgroundGeolocationService extends Service {
             FusedLocationProviderClient client = LocationServices.getFusedLocationProviderClient(
                     BackgroundGeolocationService.this
             );
-            LocationRequest locationRequest = new LocationRequest();
-            locationRequest.setMaxWaitTime(1000);
-            locationRequest.setInterval(1000);
-            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-            locationRequest.setSmallestDisplacement(distanceFilter);
+            
+            LocationRequest.Builder locationRequestBuilder = new LocationRequest.Builder(30000);
+            locationRequestBuilder.setPriority(Priority.PRIORITY_HIGH_ACCURACY);
+            locationRequestBuilder.setWaitForAccurateLocation(true);
+            locationRequestBuilder.setMaxUpdateDelayMillis(30000);
+            locationRequestBuilder.setMinUpdateDistanceMeters(distanceFilter);
+            LocationRequest locationRequest = locationRequestBuilder.build();
 
             LocationCallback callback = new LocationCallback(){
                 @Override
